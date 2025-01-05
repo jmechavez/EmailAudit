@@ -1,14 +1,14 @@
 package domain
 
-type userRepoStub struct {
+type UserRepoStub struct {
 	user []User
 }
 
-func (r userRepoStub) AllUser() ([]User, *errs.AppError) {
+func (r UserRepoStub) FindAll() ([]User, error) {
 	return r.user, nil
 }
 
-func NewUserRepoStub() userRepoStub {
+func NewUserRepoStub() UserRepoStub {
 	users := []User{
 		{
 			240001,
@@ -27,5 +27,5 @@ func NewUserRepoStub() userRepoStub {
 			"0",
 		},
 	}
-	return NewUserRepoStub(users)
+	return UserRepoStub{users}
 }
