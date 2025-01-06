@@ -1,11 +1,11 @@
-package app
+package http
 
 import (
 	"encoding/json"
 	"encoding/xml"
 	"net/http"
 
-	"github.com/jmechavez/EmailAudit/service"
+	"github.com/jmechavez/EmailAudit/internal/ports/service"
 )
 
 type UserHandlers struct {

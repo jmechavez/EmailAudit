@@ -1,6 +1,8 @@
 package service
 
-import "github.com/jmechavez/EmailAudit/domain"
+import (
+	"github.com/jmechavez/EmailAudit/internal/domain"
+)
 
 type UserService interface {
 	GetAllUser() ([]domain.User, error)
