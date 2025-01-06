@@ -2,10 +2,10 @@
 CREATE DATABASE email_dir;
 \c email_dir
 
--- Drop and create `clients` table
+-- Drop and create `users` table
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-  client_id SERIAL PRIMARY KEY,
+  user_id SERIAL PRIMARY KEY,
   fname VARCHAR(100) NOT NULL,
   lname VARCHAR(100) NOT NULL,
   id_no VARCHAR(100) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE users (
   status INT NOT NULL -- Changed to INT for 0 and 1
 );
 
--- Insert data into the `clients` table
+-- Insert data into the `users` table
 INSERT INTO users (fname, lname, id_no, email, status)
 VALUES
   ('John', 'Doe', '12345', 'john.doe@example.com', 1),  -- 1 for active

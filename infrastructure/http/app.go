@@ -13,9 +13,13 @@ import (
 func Start() {
 	router := mux.NewRouter()
 
+	// uh := UserHandlers{
+	// 	service.NewUserService(db.NewUserRepoStub()),
+	// }
 	uh := UserHandlers{
-		service.NewUserService(db.NewUserRepoStub()),
+		service.NewUserService(db.NewUserRepoDb()),
 	}
+
 	router.HandleFunc("/users", uh.GetAllUser).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
