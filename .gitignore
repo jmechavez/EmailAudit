@@ -1,0 +1,24 @@
+# Ignore specific .sql file
+EmailAudit/infrastructure/db/data/email_directory.sql
+
+# Ignore .db files
+*.db
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+
+# Ignore build directories
+/bin/
+/obj/
+
+# Ignore dependency directories
+/vendor/
+
+# Ignore logs
+*.log
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
