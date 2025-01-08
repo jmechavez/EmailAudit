@@ -22,3 +22,5 @@ EmailAudit/infrastructure/db/data/email_directory.sql
 .DS_Store
 Thumbs.db
 
+# Ignore docker-compose file
+docker-compose.yml
