@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/jmechavez/EmailAudit/errors"
+
 type User struct {
 	EmailId int    `json:"email_id"`
 	Fname   string `json:"fname"`
@@ -10,5 +12,5 @@ type User struct {
 }
 
 type UserRepo interface {
-	FindAll() ([]User, error)
+	FindAll() ([]User, *errors.AppError)
 }

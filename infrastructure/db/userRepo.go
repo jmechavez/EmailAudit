@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/jmechavez/EmailAudit/errors"
 	"github.com/jmechavez/EmailAudit/internal/domain"
 )
 
@@ -13,13 +14,13 @@ type UserRepoDb struct {
 	userDb *sql.DB
 }
 
-func (d UserRepoDb) FindAll() ([]domain.User, error) {
+func (d UserRepoDb) FindAll() ([]domain.User, *errors.AppError) {
 	findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users"
 
 	rows, err := d.userDb.Query(findNameSql)
 	if err != nil {
-		log.Println("Error while querying customer table" + err.Error())
-		return nil, err
+		log.Println("Error while querying customer table " + err.Error())
+		return nil, errors.NewUnExpectedError("Unexpected Database Error")
 	}
 	defer rows.Close()
 
@@ -36,13 +37,9 @@ func (d UserRepoDb) FindAll() ([]domain.User, error) {
 		)
 		if err != nil {
 			log.Println("Error while scanning customers " + err.Error())
-			return nil, err
+			return nil, errors.NewUnExpectedError("Error Parsing Client Data")
 		}
 		users = append(users, c)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
 	}
 
 	return users, nil
