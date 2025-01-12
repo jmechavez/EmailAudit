@@ -1,7 +1,3 @@
--- Create the database
-CREATE DATABASE email_dir;
-\c email_dir
-
 -- Drop and create `users` table
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -13,7 +9,7 @@ CREATE TABLE users (
   status INT NOT NULL -- Changed to INT for 0 and 1
 );
 
--- Insert data into the `users` table
+-- Insert data into the `clients` table
 INSERT INTO users (fname, lname, id_no, email, status)
 VALUES
   ('John', 'Doe', '12345', 'john.doe@example.com', 1),  -- 1 for active
