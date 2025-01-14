@@ -14,10 +14,18 @@ type UserRepoDb struct {
 	userDb *sql.DB
 }
 
-func (d UserRepoDb) FindAll() ([]domain.User, *errors.AppError) {
-	findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users"
+func (d UserRepoDb) FindAll(status string) ([]domain.User, *errors.AppError) {
+	var rows *sql.Rows
+	var err error
 
-	rows, err := d.userDb.Query(findNameSql)
+	if status == "" {
+		findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users"
+		rows, err = d.userDb.Query(findNameSql)
+	} else {
+		findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users WHERE status = $1"
+		rows, err = d.userDb.Query(findNameSql, status)
+	}
+
 	if err != nil {
 		log.Println("Error while querying customer table " + err.Error())
 		return nil, errors.NewUnExpectedError("Unexpected Database Error")

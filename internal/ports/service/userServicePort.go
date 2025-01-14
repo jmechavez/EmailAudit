@@ -6,15 +6,22 @@ import (
 )
 
 type UserService interface {
-	GetAllUser() ([]domain.User, *errors.AppError)
+	GetAllUser(status string) ([]domain.User, *errors.AppError)
 }
 
 type DefaultUserService struct {
 	repo domain.UserRepo
 }
 
-func (r DefaultUserService) GetAllUser() ([]domain.User, *errors.AppError) {
-	return r.repo.FindAll()
+func (r DefaultUserService) GetAllUser(status string) ([]domain.User, *errors.AppError) {
+	if status == "active" {
+		status = "1"
+	} else if status == "inactive" {
+		status = "0"
+	} else {
+		status = ""
+	}
+	return r.repo.FindAll(status)
 }
 
 func NewUserService(repository domain.UserRepo) DefaultUserService {

@@ -12,5 +12,5 @@ type User struct {
 }
 
 type UserRepo interface {
-	FindAll() ([]User, *errors.AppError)
+	FindAll(status string) ([]User, *errors.AppError)
 }

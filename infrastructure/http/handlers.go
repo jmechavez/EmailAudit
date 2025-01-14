@@ -2,7 +2,7 @@ package http
 
 import (
 	"encoding/json"
-	"encoding/xml"
+	"fmt"
 	"net/http"
 
 	"github.com/jmechavez/EmailAudit/internal/ports/service"
@@ -14,14 +14,22 @@ type UserHandlers struct {
 
 func (uh *UserHandlers) GetAllUser(w http.ResponseWriter, r *http.Request) {
 	// status := r.URL.Query().Get()
+	status := r.URL.Query().Get("status")
 
-	user, _ := uh.service.GetAllUser()
-
-	if r.Header.Get("Content-Type") == "application/xml" {
-		w.Header().Add("Content-Type", "application/xml")
-		xml.NewEncoder(w).Encode(user)
+	users, err := uh.service.GetAllUser(status)
+	if err != nil {
+		writeResponse(w, err.Code, err.AsMessage())
 	} else {
-		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
+		writeResponse(w, http.StatusOK, users)
+	}
+}
+
+func writeResponse(w http.ResponseWriter, code int, data interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		panic(fmt.Sprintf("failed to encode response: %v", err))
 	}
 }
