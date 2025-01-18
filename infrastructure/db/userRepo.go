@@ -53,6 +53,39 @@ func (d UserRepoDb) FindAll(status string) ([]domain.User, *errors.AppError) {
 	return users, nil
 }
 
+func (d UserRepoDb) ByUserNum(id string) (*domain.User, *errors.AppError) {
+	findUserSql := "SELECT email_id, fname, lname, id_no, email, status FROM users WHERE email_id = $1"
+
+	var user domain.User
+	rows, err := d.userDb.Query(findUserSql, id)
+	if err != nil {
+		log.Println("Error while querying user table: " + err.Error())
+		return nil, errors.NewUnExpectedError("Unexpected database error")
+	}
+	defer rows.Close()
+
+	// Check if any rows are returned
+	if rows.Next() {
+		err = rows.Scan(
+			&user.EmailId,
+			&user.Fname,
+			&user.Lname,
+			&user.IdNo,
+			&user.Email,
+			&user.Status,
+		)
+		if err != nil {
+			log.Println("Error while scanning user: " + err.Error())
+			return nil, errors.NewUnExpectedError("Error Parsing User Data")
+		}
+	} else {
+		// Handle no rows found
+		return nil, errors.NewNotFoundError("User not found")
+	}
+
+	return &user, nil
+}
+
 func NewUserRepoDb() UserRepoDb {
 	connStr := "user=admin password=admin123 dbname=email_dir sslmode=disable"
 	userDb, err := sql.Open("postgres", connStr)
