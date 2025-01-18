@@ -15,11 +15,12 @@ type DefaultUserService struct {
 }
 
 func (r DefaultUserService) GetAllUser(status string) ([]domain.User, *errors.AppError) {
-	if status == "active" {
+	switch status {
+	case "active":
 		status = "1"
-	} else if status == "inactive" {
+	case "inactive":
 		status = "0"
-	} else {
+	default:
 		status = ""
 	}
 	return r.repo.FindAll(status)
