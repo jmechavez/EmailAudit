@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/jmechavez/EmailAudit/internal/ports/service"
 )
 
@@ -17,6 +19,18 @@ func (uh *UserHandlers) GetAllUser(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 
 	users, err := uh.service.GetAllUser(status)
+	if err != nil {
+		writeResponse(w, err.Code, err.AsMessage())
+	} else {
+		writeResponse(w, http.StatusOK, users)
+	}
+}
+
+func (uh *UserHandlers) GetCustomerNo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	email_id := vars["email_id"]
+
+	users, err := uh.service.ByUserNum(email_id)
 	if err != nil {
 		writeResponse(w, err.Code, err.AsMessage())
 	} else {
