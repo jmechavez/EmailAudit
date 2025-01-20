@@ -1,7 +1,7 @@
 package db
 
 import (
-	"log"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -65,34 +65,39 @@ func (d UserRepoDb) FindAll(status string) ([]domain.User, *errors.AppError) {
 func (d UserRepoDb) ByUserNum(id string) (*domain.User, *errors.AppError) {
 	findUserSql := "SELECT email_id, fname, lname, id_no, email, status FROM users WHERE email_id = $1"
 
-	var user domain.User
-	rows, err := d.userDb.Query(findUserSql, id)
+	var users domain.User
+
+	err := d.userDb.Get(&users, findUserSql, id)
+	// rows, err := d.userDb.Query(findUserSql, id)
 	if err != nil {
-		log.Println("Error while querying user table: " + err.Error())
+		if err == sql.ErrNoRows {
+			return nil, errors.NewNotFoundError("User not found")
+		}
+		logger.Error("Error while querying user table: " + err.Error())
 		return nil, errors.NewUnExpectedError("Unexpected database error")
 	}
-	defer rows.Close()
+	// defer rows.Close()
 
 	// Check if any rows are returned
-	if rows.Next() {
-		err = rows.Scan(
-			&user.EmailId,
-			&user.Fname,
-			&user.Lname,
-			&user.IdNo,
-			&user.Email,
-			&user.Status,
-		)
-		if err != nil {
-			log.Println("Error while scanning user: " + err.Error())
-			return nil, errors.NewUnExpectedError("Error Parsing User Data")
-		}
-	} else {
-		// Handle no rows found
-		return nil, errors.NewNotFoundError("User not found")
-	}
-
-	return &user, nil
+	// if rows.Next() {
+	// 	err = rows.Scan(
+	// 		&user.EmailId,
+	// 		&user.Fname,
+	// 		&user.Lname,
+	// 		&user.IdNo,
+	// 		&user.Email,
+	// 		&user.Status,
+	// 	)
+	// 	if err != nil {
+	// 		log.Println("Error while scanning user: " + err.Error())
+	// 		return nil, errors.NewUnExpectedError("Error Parsing User Data")
+	// 	}
+	// } else {
+	// 	// Handle no rows found
+	// 	return nil, errors.NewNotFoundError("User not found")
+	// }
+	//
+	return &users, nil
 }
 
 func NewUserRepoDb() UserRepoDb {
