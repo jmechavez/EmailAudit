@@ -26,7 +26,7 @@ func (uh *UserHandlers) GetAllUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (uh *UserHandlers) GetCustomerNo(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandlers) GetUserNo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	email_id := vars["email_id"]
 
