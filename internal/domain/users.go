@@ -1,6 +1,9 @@
 package domain
 
-import "github.com/jmechavez/EmailAudit/errors"
+import (
+	"github.com/jmechavez/EmailAudit/errors"
+	"github.com/jmechavez/EmailAudit/internal/dto"
+)
 
 type User struct {
 	EmailId int    `json:"email_id" db:"email_id"`
@@ -9,6 +12,25 @@ type User struct {
 	IdNo    int    `json:"id_no"    db:"id_no"`
 	Email   string `json:"email"    db:"email"`
 	Status  string `json:"status"   db:"status"`
+}
+
+func (u User) statusAsText() string {
+	statusAsText := "active"
+	if u.Status == "0" {
+		statusAsText = "inactive"
+	}
+	return statusAsText
+}
+
+func (u User) ToDto() dto.UserResponse {
+	return dto.UserResponse{
+		EmailId: u.EmailId,
+		Fname:   u.Fname,
+		Lname:   u.Lname,
+		IdNo:    u.IdNo,
+		Email:   u.Email,
+		Status:  u.statusAsText(), // call func statusAsText
+	}
 }
 
 type UserRepo interface {
