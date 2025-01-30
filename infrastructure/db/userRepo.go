@@ -15,18 +15,43 @@ type UserRepoDb struct {
 	userDb *sqlx.DB
 }
 
+func (d UserRepoDb) AddUser(u domain.User) (*domain.User, *errors.AppError) {
+	insertUserSql := "INSERT INTO users (email_id, fname, lname, id_no, email, status ,email_action) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING email_id"
+
+	// Execute the query and scan the returned ID
+	var emailId int64
+	err := d.userDb.QueryRow(
+		insertUserSql,
+		u.EmailId,
+		u.Fname,
+		u.Lname,
+		u.IdNo,
+		u.Email,
+		u.Status,
+		u.EmailAction,
+	).Scan(&emailId)
+	if err != nil {
+		logger.Error("Error while creating account: " + err.Error())
+		return nil, errors.NewUnExpectedError("Unexpected Database Error")
+	}
+
+	u.EmailId = emailId
+
+	return &u, nil
+}
+
 func (d UserRepoDb) FindAll(status string) ([]domain.User, *errors.AppError) {
 	// var rows *sql.Rows
 	var err error
 	var users []domain.User
 
 	if status == "" {
-		findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users"
-		err = d.userDb.Select(&users, findNameSql)
+		findUserSql := "SELECT email_id, fname, lname, id_no, email, status, email_action FROM users"
+		err = d.userDb.Select(&users, findUserSql)
 		// rows, err = d.userDb.Query(findNameSql)
 	} else {
-		findNameSql := "SELECT email_id, fname, lname, id_no, email, status FROM users WHERE status = $1"
-		err = d.userDb.Select(&users, findNameSql, status)
+		findUserSql := "SELECT email_id, fname, lname, id_no, email, status, email_action FROM users WHERE status = $1"
+		err = d.userDb.Select(&users, findUserSql, status)
 		// rows, err = d.userDb.Query(findNameSql, status)
 	}
 
@@ -63,7 +88,7 @@ func (d UserRepoDb) FindAll(status string) ([]domain.User, *errors.AppError) {
 }
 
 func (d UserRepoDb) ByUserNum(id string) (*domain.User, *errors.AppError) {
-	findUserSql := "SELECT email_id, fname, lname, id_no, email, status FROM users WHERE email_id = $1"
+	findUserSql := "SELECT email_id, fname, lname, id_no, email, status, email_action FROM users WHERE email_id = $1"
 
 	var users domain.User
 
@@ -100,12 +125,6 @@ func (d UserRepoDb) ByUserNum(id string) (*domain.User, *errors.AppError) {
 	return &users, nil
 }
 
-func NewUserRepoDb() UserRepoDb {
-	connStr := "user=admin password=admin123 dbname=email_dir sslmode=disable"
-	userDb, err := sqlx.Open("postgres", connStr)
-	if err != nil {
-		panic(err)
-	}
-
-	return UserRepoDb{userDb}
+func NewUserRepoDb(userPostDb *sqlx.DB) UserRepoDb {
+	return UserRepoDb{userPostDb}
 }
