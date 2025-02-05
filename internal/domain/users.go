@@ -42,5 +42,5 @@ func (u User) ToNewAccountResponseDTO() dto.NewUserResponse {
 type UserRepo interface {
 	FindAll(status string) ([]User, *errors.AppError)
 	ByUserNum(id string) (*User, *errors.AppError)
-	AddUser(user User) (*User, *errors.AppError)
+	AddUser(User) (*User, *errors.AppError)
 }

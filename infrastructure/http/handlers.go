@@ -40,30 +40,30 @@ func (uh *UserHandlers) GetUserNo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (uh *UserHandlers) NewUser(w http.ResponseWriter, r *http.Request) {
+func (uh UserHandlers) NewUser(w http.ResponseWriter, r *http.Request) {
+	// Extract emailId from URL path
 	vars := mux.Vars(r)
-	emailIdStr := vars["email_id"]
-
-	// Convert emailIdStr to int64
-	emailId, err := strconv.ParseInt(emailIdStr, 10, 64)
+	idNo, err := strconv.Atoi(vars["id_no"])
 	if err != nil {
-		writeResponse(w, http.StatusBadRequest, "Invalid email ID format")
+		writeResponse(w, http.StatusBadRequest, "Invalid ID number")
 		return
 	}
 
+	// Decode the request body into req
 	var req dto.NewUserRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		writeResponse(w, http.StatusBadRequest, err.Error())
-	} else {
-		req.EmailId = emailId
-		user, appError := uh.service.NewUser(req)
-		if appError != nil {
-			writeResponse(w, appError.Code, appError.Message)
-		} else {
-			writeResponse(w, http.StatusCreated, user)
-		}
+		return
 	}
+	// Call the service layer
+	response, appErr := uh.service.NewUser(req, idNo)
+	if appErr != nil {
+		writeResponse(w, appErr.Code, appErr.Message)
+		return
+	}
+
+	writeResponse(w, http.StatusCreated, response)
 }
 
 func writeResponse(w http.ResponseWriter, code int, data interface{}) {

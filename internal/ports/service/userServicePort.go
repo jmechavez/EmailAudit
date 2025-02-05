@@ -10,7 +10,7 @@ import (
 type UserService interface {
 	GetAllUser(status string) ([]dto.UserResponse, *errors.AppError)
 	ByUserNum(id string) (*dto.UserResponse, *errors.AppError)
-	NewUser(dto.NewUserRequest) (*dto.NewUserResponse, *errors.AppError)
+	NewUser(rq dto.NewUserRequest, idNo int) (*dto.NewUserResponse, *errors.AppError)
 }
 
 type DefaultUserService struct {
@@ -53,24 +53,31 @@ func (r DefaultUserService) ByUserNum(id string) (*dto.UserResponse, *errors.App
 
 func (r DefaultUserService) NewUser(
 	rq dto.NewUserRequest,
+	idNo int,
 ) (*dto.NewUserResponse, *errors.AppError) {
-	err := rq.Validate()
-	if err != nil {
+	// Validate request
+	if err := rq.Validate(); err != nil {
 		return nil, err
 	}
+
+	// Create user domain object
 	u := domain.User{
 		EmailId:     0,
 		Fname:       rq.Fname,
 		Lname:       rq.Lname,
-		IdNo:        rq.IdNo,
+		IdNo:        idNo, // Use the provided idNo
 		Email:       rq.Email,
-		Status:      "1",
+		Status:      "active",
 		EmailAction: rq.EmailAction,
 	}
+
+	// Add user to repository
 	newUser, err := r.repo.AddUser(u)
 	if err != nil {
 		return nil, err
 	}
+
+	// Convert to response DTO
 	response := newUser.ToNewAccountResponseDTO()
 	return &response, nil
 }
