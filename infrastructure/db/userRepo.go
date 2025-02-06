@@ -16,13 +16,12 @@ type UserRepoDb struct {
 }
 
 func (d UserRepoDb) AddUser(u domain.User) (*domain.User, *errors.AppError) {
-	insertUserSql := "INSERT INTO users (email_id, fname, lname, id_no, email, status ,email_action) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING email_id"
+	insertUserSql := "INSERT INTO users (fname, lname, id_no, email, status ,email_action) VALUES ($1, $2, $3, $4, $5, $6) RETURNING email_id"
 
 	// Execute the query and scan the returned ID
 	var emailId int64
 	err := d.userDb.QueryRow(
 		insertUserSql,
-		u.EmailId,
 		u.Fname,
 		u.Lname,
 		u.IdNo,

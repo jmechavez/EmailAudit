@@ -25,7 +25,7 @@ func Start() {
 
 	router.HandleFunc("/users", uh.GetAllUser).Methods(http.MethodGet)
 	router.HandleFunc("/users/{email_id}", uh.GetUserNo).Methods(http.MethodGet)
-	router.HandleFunc("/users/{email_id}/postuser", uh.NewUser).Methods(http.MethodPost)
+	router.HandleFunc("/users/{id_no}/postuser", uh.NewUser).Methods(http.MethodPost)
 
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
 }
